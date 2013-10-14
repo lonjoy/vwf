@@ -2,6 +2,51 @@ VIRTUAL WORLD FRAMEWORK CHANGE LOG
 ==================================
 
 ----------------------------------
+0.6.17
+----------------------------------------------------------------------------------------------------
+Note: (*) indicates an API change.
+
+Server:
+- CHG: Adds the new persistence/save design implementation of listing saves, as well as providing an initial structure for compartmentalizing the actual storage portion of the system to make providing alternate non-filesystem implementations easier in the future.
+- CHG: Removes storage_test.rb original storage test implementation since the updated spec style implementation covers the same testing
+purposes.
+- CHG: Adds save functionality and fixes missing require issue with persistence in NodeJS server.  Updates package.json and npm-shrinkwrap.json to include new querystring package for handling POST param parsing. References #2897.
+- NEW: Run the *_spec.rb riles as well as the *_test.rb files. Fixes whitespace issues in storagefs.rb, makes certain lists of instance ID's or save names returned by storage functions are sorted for consistency when testing. Updates the storagefs_spec.rb testing file to provide a full battery of testing. References #2746.  Add example of spec version of storage_test.rb. Enable running test files directly using ruby without rake
+- CHG: Created a socketManager variable to hold what is returned from sio.listen(..) We had been reusing the sio variable for two different types of object.  I think that would have led to confusion. refs #2893
+- NEW: Have HandleAdminChrome return an empty string if html overlay does not exist refs #2891
+- NEW: Add handler to node.js server for vwf /admin/chrome requests. fixes #2891
+- NEW: Adds an outside in web request test of the persistence list-saves functionality. Current implementation is tied to the FS based storage. References #2746.
+- NEW: Adds a unit test for the filesystem based storage system, and fixes minor issues that came to light during the development of the unit tests. References #2746.
+
+Client:
+- CHG: Branch/editor optimization (Redmine issue #2731) Go ahead given, going ahead and merging changes in. Fixes spacing issues with file. References #2731. Adds function to clear out the HTML div containing object details in the editor, when the editor is closed, so as to minimize impact on performance. References #2731. Alters editor implementation so that property change values are stored raw, and only deal with JSON parsing when necessary to update a field. Only update property fields when a tab is opened or if the tab was open when an update was received.
+- CHG: Update to three.js r61. Copied from https://github.com/virtual-world-framework/three.js.git
+Revision 8471bc8564fc2bf8b3360460bf20db0c630168df Refs #2865
+- CHG: Adds the all of the files from the latest build of Cesium. Fixes 2876
+- CHG: Remove nodriver from configuration. Because it has specified webrtc, it will not default to threejs. Refs #2877.
+- CHG: Update webrtc configuration to remove threejs driver dependency. Fixes #2877. Update webrtc configuration file to not use threejs driver, since it's not needed. Replace Cesium r19 to r20
+- CHG: Check to make sure disableInputs is false before trying to move the nav object. Refs #2633
+- CHG: Updates color picker interfaces to set color when they are closed, even if the 'select' button has not been pressed. Fixes #2662.
+
+
+Demonstration Applications:
+- NEW: Update catalog.html.erb to include KimRay Valve Demonstration. Add link to Kimray Valve Demo to VWF main website.
+- CHG: Adjusted interval timing based on feedback to smooth translation. Code review cleanup of file. Update to script to allow for continuous motion when holding down G key. Fixes #2879
+- CHG: Makes the counter that the duck rotation is based off of a property so that is is properly synched across multiple clients. References #2805.
+- CHG: Pull out repeated code in duck that went into a parseSocketUrl function. fixes #2893
+- CHG: Remove command-center-threejs per #2467
+- CHG: Replaces channel knob material with reference to volume knob material so that they match.
+
+Documentation:
+
+
+Test Applications:
+
+
+
+
+-----------------
+----------------------------------
 0.6.16
 ----------------------------------------------------------------------------------------------------
 Note: (*) indicates an API change.
@@ -18,7 +63,7 @@ Client:
 Demonstration Applications:
 - Command Center: Texture Update for backboard. Fixes #2668
 - Command Center: Fix bad path for command-center artwork.
-- Write Togeter: Create a new 2D editor application for collaborate document creation. 
+- Write Together: Create a new 2D editor application for collaborate document creation. 
 - Radio Lesson: Updates the 'turn the radio on' step of the lesson to listen for control value updated events rather than pointer up events. Fixes #2590.
 
 Documentation:
