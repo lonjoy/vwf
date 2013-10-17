@@ -2715,6 +2715,14 @@ if ( ! childComponent.source ) {
                 entrants.assignments = 0;
             }
 
+            // Have we been called for the same property on the same node for a property still being
+            // assigned (such as when a setter function assigns the property to itself)? If so, then
+            // the inner call should skip drivers that the outer call has already invoked, and the
+            // outer call should complete without invoking drivers that the inner call will have
+            // already called.
+
+            var reentered = ( entry.index !== undefined );
+
             // We'll need to know if the set was delegated to other properties, actually assigned
             // here, or if blocked during replication while attempting to delegate.
 
@@ -2730,7 +2738,7 @@ if ( ! childComponent.source ) {
                 // property (if any). If an inner call completed for this node and property, skip
                 // the remaining models.
 
-                if ( ( entry.index === undefined || index > entry.index ) && ! reentry.completed ) {
+                if ( ( ! reentered || index > entry.index ) && ! reentry.completed ) {
 
                     // Record the active model number.
  
@@ -2807,7 +2815,7 @@ if ( ! childComponent.source ) {
             // For a reentrant call, restore the previous state, move the index forward to cover
             // the models we called.
 
-            if ( entry.index !== undefined ) {
+            if ( reentered ) {
                 entrants[nodeID+'-'+propertyName] = entry;
                 entry.completed = true;
             }
@@ -2867,6 +2875,14 @@ if ( ! childComponent.source ) {
                 entrants.retrievals = 0;
             }
 
+            // Have we been called for the same property on the same node for a property still being
+            // retrieved (such as when a getter function retrieves the property from itself)? If so,
+            // then the inner call should skip drivers that the outer call has already invoked, and
+            // the outer call should complete without invoking drivers that the inner call will have
+            // already called.
+
+            var reentered = ( entry.index !== undefined );
+
             // We'll need to know if the set was delegated to other properties, actually assigned
             // here, or if blocked during replication while attempting to delegate.
 
@@ -2879,7 +2895,7 @@ if ( ! childComponent.source ) {
 
                 // Skip models up through the one making the most recent call here (if any).
 
-                if ( ( entry.index === undefined || index > entry.index ) && ! reentry.completed ) {
+                if ( ( ! reentered || index > entry.index ) && ! reentry.completed ) {
 
                     // Record the active model number.
  
@@ -2955,9 +2971,7 @@ if ( ! childComponent.source ) {
             // Also don't notify if attempted delegation was blocked during replication since it
             // makes this like an inner call.
 
-            var reentrant = (entry.index !== undefined);
-
-            if ( !reentrant ) {
+            if ( ! reentered ) {
                 this.views.forEach( function( view ) {
                     view.gotProperty && view.gotProperty( nodeID, propertyName, propertyValue );  // TODO: be sure this is the value actually gotten and not an intermediate value from above
                 } );
@@ -2965,7 +2979,7 @@ if ( ! childComponent.source ) {
 
             // For a reentrant call, restore the previous state, move the index forward to cover
             // the models we called, and record the current result.
-            if ( entry.index !== undefined ) {
+            if ( reentered ) {
                 entrants[nodeID+'-'+propertyName] = entry;
                 entry.value = propertyValue;
 
